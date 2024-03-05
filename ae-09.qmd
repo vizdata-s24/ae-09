@@ -1,0 +1,46 @@
+---
+title: "AE 09: Freedom index"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages-data
+#| message: false
+
+library(tidyverse)
+library(mapproj)
+
+freedom <- read_csv("data/freedom-2022.csv")
+```
+
+## Freedom index
+
+Load data:
+
+```{r}
+#| label: load-clean
+#| message: false
+
+freedom <- read_csv("data/freedom-2022.csv", na = c("", "-")) |>
+  drop_na()
+
+world_map <- map_data("world") |> as_tibble()
+```
+
+Plot:
+
+```{r}
+
+freedom_map <- freedom |>
+  left_join(world_map, by = c("country" = "region")) |>
+  mutate(
+    cl = factor(cl, ordered = TRUE),
+    pr = factor(pr, ordered = TRUE)
+  )
+
+freedom_map |>
+  mutate(cl = factor(cl, ordered = TRUE)) |>
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = cl))
+```
